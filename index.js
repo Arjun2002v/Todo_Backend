@@ -1,5 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const connectDB = require("./Database/TodoDb");
 require("dotenv").config();
 
 const app = express();
@@ -21,7 +22,4 @@ mongoose
 app.get("/", (req, res) => {
   res.send("Hello from Node.js and MongoDB!");
 });
-
-app.listen(PORT, () => {
-  console.log(`🚀 Server is running on http://localhost:${PORT}`);
-});
+connectDB();
