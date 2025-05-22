@@ -1,1 +1,1 @@
-const Todo = require("../product/todo");
+const Todo = require("../Schema/todo");

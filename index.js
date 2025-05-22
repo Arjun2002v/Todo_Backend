@@ -16,12 +16,25 @@ app.use(express.json());
 app.get("/", (req, res) => {
   res.send("Hello from Node.js and MongoDB!");
 });
-app.post("/todos", (req, res) => {
+
+// Create Todo route
+app.post("/todos", async (req, res) => {
   const { todo } = req.body;
-  const newTodo = new Todo({ todo });
-  const saved = newTodo.save();
-  res.send(201);
+
+  if (!todo) {
+    return res.status(400).send("Todo is required");
+  }
+
+  try {
+    const newTodo = new Todo({ Todo: todo }); // Capital T as per schema
+    const saved = await newTodo.save();
+    res.status(201).json(saved); // Return the saved todo
+  } catch (error) {
+    console.error("Error saving todo:", error);
+    res.status(500).send("Server error");
+  }
 });
+
 // Start server
 app.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);
