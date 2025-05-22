@@ -1,11 +1,11 @@
 const mongoose = require("mongoose");
 
 const schema = new mongoose.Schema({
-  Todo: {
+  todo: {
     type: String,
     required: true,
   },
-  Completed: {
+  completed: {
     type: Boolean,
     default: false,
   },
