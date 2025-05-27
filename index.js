@@ -22,7 +22,28 @@ app.get("/", (req, res) => {
   res.send("Hello from Node.js and MongoDB!");
 });
 
-// Create Todo route
+//Get all the Todo
+app.get("/alltodo", async (req, res) => {
+  const list = await Todo.find();
+  res.send(list).sendStatus(201);
+  if (!list) {
+    res.sendStatus(401);
+  }
+});
+
+//Get Specific Todo by id
+
+app.get("/todo/:id", async (req, res) => {
+  const { id } = req.params;
+
+  const todo = await Todo.findById(id);
+  res.send(todo).sendStatus(200);
+  if (!todo) {
+    res.send("No Todo Found").sendStatus(401);
+  }
+});
+
+// Create Todo
 app.post("/todos", async (req, res) => {
   const { todo } = req.body;
 
