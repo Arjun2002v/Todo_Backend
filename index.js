@@ -52,9 +52,9 @@ app.post("/todos", async (req, res) => {
   }
 
   try {
-    const newTodo = new Todo({ Todo: todo }); // Capital T as per schema
+    const newTodo = new Todo({ Todo: todo });
     const saved = await newTodo.save();
-    res.status(201).json(saved); // Return the saved todo
+    res.status(201).json(saved);
   } catch (error) {
     console.error("Error saving todo:", error);
     res.status(500).send("Server error");
@@ -62,7 +62,7 @@ app.post("/todos", async (req, res) => {
 });
 
 //Update Todo
-app.put("/update/:id", async (req, res) => {
+app.put("/todo/:id", async (req, res) => {
   const { id } = req.params;
   const { todo } = req.body;
   const updated = await Todo.findByIdAndUpdate(id, {
@@ -74,6 +74,23 @@ app.put("/update/:id", async (req, res) => {
   }
 });
 
+//Filter the Todo based of the completion status
+app.get("/alltodos", async (req, res) => {
+  const { completed, sort, order } = req.query;
+  let filter = {};
+  let sorted;
+  if (completed !== undefined) {
+    filter.Completed = completed === "true";
+  }
+  if (sort) {
+    sorted[sort] = order === "desc" ? -1 : 1;
+  }
+  const todo = await Todo.find(filter);
+  res.send(todo).sendStatus(201);
+  if (!todo) {
+    res.send("No Todo Found").sendStatus(201);
+  }
+});
 //Update on Click of input box
 app.put("/completed/:id", async (req, res) => {
   const { id } = req.params;
@@ -90,7 +107,7 @@ app.put("/completed/:id", async (req, res) => {
 });
 
 //Delete the Specific todo
-app.delete("/delete/:id", async (req, res) => {
+app.delete("/todo/:id", async (req, res) => {
   const { id } = req.params;
   const deleted = await Todo.findByIdAndDelete(id);
   res.send("Deleted the Todo").sendStatus(201);
