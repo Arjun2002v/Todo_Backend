@@ -48,7 +48,7 @@ app.post("/todos", async (req, res) => {
   const { todo } = req.body;
 
   if (!todo) {
-    return res.status(400).send("Todo is required");
+    return res.status(200).send("Todo is required");
   }
 
   try {
@@ -61,6 +61,43 @@ app.post("/todos", async (req, res) => {
   }
 });
 
+//Update Todo
+app.put("/update/:id", async (req, res) => {
+  const { id } = req.params;
+  const { todo } = req.body;
+  const updated = await Todo.findByIdAndUpdate(id, {
+    ...todo(todo && { Todo: todo }),
+  });
+  res.send(updated).sendStatus(201);
+  if (!updated) {
+    res.send("No Todo Updated").sendStatus(200);
+  }
+});
+
+//Update on Click of input box
+app.put("/completed/:id", async (req, res) => {
+  const { id } = req.params;
+  const { completed } = req.body;
+  const update = await Todo.findByIdAndUpdate(
+    id,
+    { Completed: completed },
+    { new: true }
+  );
+  res.send(update).sendStatus(200);
+  if (update) {
+    res.send("No Todo Updated").sendStatus(200);
+  }
+});
+
+//Delete the Specific todo
+app.delete("/delete/:id", async (req, res) => {
+  const { id } = req.params;
+  const deleted = await Todo.findByIdAndDelete(id);
+  res.send("Deleted the Todo").sendStatus(201);
+  if (!deleted) {
+    res.send("Could not Delete the Todo").sendStatus(200);
+  }
+});
 // Start server
 app.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);
