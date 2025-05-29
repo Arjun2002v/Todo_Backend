@@ -2,12 +2,32 @@ const Todo = require("../Schema/todo");
 
 //Get all the Todo
 exports.getAllTodo = async (req, res) => {
-  const list = await Todo.find();
-  res.send(list).sendStatus(201);
-  if (!list) {
-    res.sendStatus(401);
+  try {
+    const { completed, sorts, order } = req.query; // Use query instead of body for GET
+    let filter = {};
+    let sortBy = {};
+
+    if (completed !== undefined) {
+      filter.Completed = completed === "true";
+    }
+
+    if (sorts !== undefined) {
+      sortBy[sorts] = order === "desc" ? -1 : 1;
+    }
+
+    const todos = await Todo.find(filter).sort(sortBy);
+
+    if (!todos || todos.length === 0) {
+      return res.status(404).send("No todos found");
+    }
+
+    return res.status(200).json(todos);
+  } catch (error) {
+    console.error("Error fetching todos:", error);
+    return res.status(500).send("Server error");
   }
 };
+
 //Delete the Specific todo
 exports.deleteTodo = async (req, res) => {
   const { id } = req.params;
@@ -17,6 +37,7 @@ exports.deleteTodo = async (req, res) => {
     res.send("Could not Delete the Todo").sendStatus(200);
   }
 };
+
 //Update on Click of input box
 exports.updateCompleted = async (req, res) => {
   const { id } = req.params;
@@ -31,23 +52,7 @@ exports.updateCompleted = async (req, res) => {
     res.send("No Todo Updated").sendStatus(200);
   }
 };
-//Filter the Todo based of the completion status
-exports.filterTodo = async (req, res) => {
-  const { completed, sort, order } = req.query;
-  let filter = {};
-  let sorted;
-  if (completed !== undefined) {
-    filter.Completed = completed === "true";
-  }
-  if (sort) {
-    sorted[sort] = order === "desc" ? -1 : 1;
-  }
-  const todo = await Todo.find(filter);
-  res.send(todo).sendStatus(201);
-  if (!todo) {
-    res.send("No Todo Found").sendStatus(201);
-  }
-};
+
 //Update Todo
 exports.updateTodo = async (req, res) => {
   const { id } = req.params;
@@ -60,6 +65,7 @@ exports.updateTodo = async (req, res) => {
     res.send("No Todo Updated").sendStatus(200);
   }
 };
+
 // Create Todo
 exports.createTodo = async (req, res) => {
   const { todo } = req.body;
@@ -77,6 +83,7 @@ exports.createTodo = async (req, res) => {
     res.status(500).send("Server error");
   }
 };
+
 //Mark as Complete
 exports.MarkComplete = async (req, res) => {
   try {
@@ -100,6 +107,7 @@ exports.MarkComplete = async (req, res) => {
     res.status(500).send("Server error");
   }
 };
+
 //Get Specific Todo by id
 exports.getSpecificTodo = async (req, res) => {
   const { id } = req.params;

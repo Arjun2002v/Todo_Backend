@@ -27,24 +27,21 @@ if (!process.env.MONGO_URI || !connectDB) {
 // Middleware
 app.use(express.json());
 
-// Test route
 app.get("/", (req, res) => {
   res.send("Hello from Node.js and MongoDB!");
 });
 
-app.get("/alltodo", getAllTodo);
+app.get("/todos", getAllTodo);
 
-app.get("/todo/:id", getSpecificTodo);
+app.get("/todos/:id", getSpecificTodo);
 
-app.patch("/todo/mark", MarkComplete);
+app.patch("/todos/mark", MarkComplete);
 
 app.post("/todos", createTodo);
 
-app.put("/todo/:id", updateTodo);
+app.put("/todos/:id", updateTodo);
 
-app.get("/alltodos", filterTodo);
-
-app.put("/completed/:id", updateCompleted);
+app.put("/todo/:id", updateCompleted);
 
 app.delete("/todo/:id", deleteTodo);
 // Start server
