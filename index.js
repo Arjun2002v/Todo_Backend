@@ -3,6 +3,16 @@ const connectDB = require("./Database/TodoDb");
 
 require("dotenv").config();
 const Todo = require("./Schema/todo");
+const {
+  getAllTodo,
+  getSpecificTodo,
+  MarkComplete,
+  createTodo,
+  updateTodo,
+  updateCompleted,
+  deleteTodo,
+  filterTodo,
+} = require("./controllers/TodoContoller");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -22,99 +32,21 @@ app.get("/", (req, res) => {
   res.send("Hello from Node.js and MongoDB!");
 });
 
-//Get all the Todo
-app.get("/alltodo", async (req, res) => {
-  const list = await Todo.find();
-  res.send(list).sendStatus(201);
-  if (!list) {
-    res.sendStatus(401);
-  }
-});
+app.get("/alltodo", getAllTodo);
 
-//Get Specific Todo by id
+app.get("/todo/:id", getSpecificTodo);
 
-app.get("/todo/:id", async (req, res) => {
-  const { id } = req.params;
+app.patch("/todo/mark", MarkComplete);
 
-  const todo = await Todo.findById(id);
-  res.send(todo).sendStatus(200);
-  if (!todo) {
-    res.send("No Todo Found").sendStatus(401);
-  }
-});
+app.post("/todos", createTodo);
 
-// Create Todo
-app.post("/todos", async (req, res) => {
-  const { todo } = req.body;
+app.put("/todo/:id", updateTodo);
 
-  if (!todo) {
-    return res.status(200).send("Todo is required");
-  }
+app.get("/alltodos", filterTodo);
 
-  try {
-    const newTodo = new Todo({ Todo: todo });
-    const saved = await newTodo.save();
-    res.status(201).json(saved);
-  } catch (error) {
-    console.error("Error saving todo:", error);
-    res.status(500).send("Server error");
-  }
-});
+app.put("/completed/:id", updateCompleted);
 
-//Update Todo
-app.put("/todo/:id", async (req, res) => {
-  const { id } = req.params;
-  const { todo } = req.body;
-  const updated = await Todo.findByIdAndUpdate(id, {
-    ...todo(todo && { Todo: todo }),
-  });
-  res.send(updated).sendStatus(201);
-  if (!updated) {
-    res.send("No Todo Updated").sendStatus(200);
-  }
-});
-
-//Filter the Todo based of the completion status
-app.get("/alltodos", async (req, res) => {
-  const { completed, sort, order } = req.query;
-  let filter = {};
-  let sorted;
-  if (completed !== undefined) {
-    filter.Completed = completed === "true";
-  }
-  if (sort) {
-    sorted[sort] = order === "desc" ? -1 : 1;
-  }
-  const todo = await Todo.find(filter);
-  res.send(todo).sendStatus(201);
-  if (!todo) {
-    res.send("No Todo Found").sendStatus(201);
-  }
-});
-//Update on Click of input box
-app.put("/completed/:id", async (req, res) => {
-  const { id } = req.params;
-  const { completed } = req.body;
-  const update = await Todo.findByIdAndUpdate(
-    id,
-    { Completed: completed },
-    { new: true }
-  );
-  res.send(update).sendStatus(200);
-  if (update) {
-    res.send("No Todo Updated").sendStatus(200);
-  }
-});
-
-//Delete the Specific todo
-app.delete("/todo/:id", async (req, res) => {
-  const { id } = req.params;
-  const deleted = await Todo.findByIdAndDelete(id);
-  res.send("Deleted the Todo").sendStatus(201);
-  if (!deleted) {
-    res.send("Could not Delete the Todo").sendStatus(200);
-  }
-});
+app.delete("/todo/:id", deleteTodo);
 // Start server
 app.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);
