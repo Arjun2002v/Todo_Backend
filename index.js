@@ -1,5 +1,7 @@
 const express = require("express");
 const connectDB = require("./Database/TodoDb");
+const verifyToken = require("./middleware/authMiddleware");
+const auth = require("./routes/authRoutes");
 
 require("dotenv").config();
 
@@ -30,19 +32,21 @@ app.get("/", (req, res) => {
   res.send("Hello from Node.js and MongoDB!");
 });
 
-app.get("/todos", getAllTodo);
+app.use("/auth", auth);
 
-app.get("/todos/:id", getSpecificTodo);
+app.get("/todos", verifyToken, getAllTodo);
 
-app.patch("/todos/mark", MarkComplete);
+app.get("/todos/:id", verifyToken, getSpecificTodo);
 
-app.post("/todos", createTodo);
+app.patch("/todos/mark", verifyToken, MarkComplete);
 
-app.put("/todos/:id", updateTodo);
+app.post("/todos", verifyToken, createTodo);
 
-app.put("/todo/:id", updateCompleted);
+app.put("/todos/:id", verifyToken, updateTodo);
 
-app.delete("/todos/:id", deleteTodo);
+app.put("/todo/:id", verifyToken, updateCompleted);
+
+app.delete("/todos/:id", verifyToken, deleteTodo);
 // Start server
 app.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);

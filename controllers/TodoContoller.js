@@ -3,7 +3,7 @@ const Todo = require("../Schema/todo");
 //Get all the Todo
 exports.getAllTodo = async (req, res) => {
   try {
-    const { completed, sorts, order } = req.query; // Use query instead of body for GET
+    const { completed, sorts, order } = req.query;
     let filter = {};
     let sortBy = {};
 
