@@ -2,7 +2,7 @@ const express = require("express");
 const connectDB = require("./Database/TodoDb");
 
 require("dotenv").config();
-const Todo = require("./Schema/todo");
+
 const {
   getAllTodo,
   getSpecificTodo,
@@ -11,7 +11,6 @@ const {
   updateTodo,
   updateCompleted,
   deleteTodo,
-  filterTodo,
 } = require("./controllers/TodoContoller");
 
 const app = express();
@@ -43,7 +42,7 @@ app.put("/todos/:id", updateTodo);
 
 app.put("/todo/:id", updateCompleted);
 
-app.delete("/todo/:id", deleteTodo);
+app.delete("/todos/:id", deleteTodo);
 // Start server
 app.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);

@@ -113,8 +113,9 @@ exports.getSpecificTodo = async (req, res) => {
   const { id } = req.params;
 
   const todo = await Todo.findById(id);
-  res.send(todo).sendStatus(200);
   if (!todo) {
-    res.send("No Todo Found").sendStatus(401);
+    res.send("No Todo Found").sendStatus(200);
+  } else {
+    res.send(todo).sendStatus(200);
   }
 };
