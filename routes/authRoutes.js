@@ -1,4 +1,3 @@
-// routes/auth.js
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const Users = require("../Schema/user");
@@ -13,7 +12,7 @@ router.post("/signup", async (req, res) => {
   // Check if user exists
   const exists = await Users.findOne({ username });
   if (exists) {
-    return res.status(400).json({ message: "User already exists" });
+    return res.status(200).json({ message: "User already exists" });
   }
 
   // Hash password
@@ -29,4 +28,25 @@ router.post("/signup", async (req, res) => {
   return res.status(201).json({ message: "Signup successful" });
 });
 
+//Login Flow
+router.post("/login", async (req, res) => {
+  const { username, password } = req.body;
+  const user = await Users.findOne({ username });
+  if (user) {
+    res.json({ message: "Login Successful" }).send(200);
+  } else {
+    res.json({ message: "User Does Not Exist Sign Up First" }).send(200);
+  }
+  const pass = await bcrypt.compare(password, user.password);
+
+  if (!pass) {
+    res.json({ message: "Incorrect Password" }).send(200);
+  }
+  // Generate JWT token
+  const token = jwt.sign({ username: user.username }, process.env.JWT_SECRET, {
+    expiresIn: "24h",
+  });
+
+  return res.status(200).json({ message: "Login Successful", token });
+});
 module.exports = router;
