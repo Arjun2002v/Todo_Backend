@@ -25,6 +25,13 @@ function App() {
     setMessage(data);
     console.log("dsdada", data);
   };
+  const Delete = async (id) => {
+    const dlt = await fetch(`http://localhost:5000/todos/${id}`, {
+      method: "DELETE",
+    });
+    const data = await dlt.json;
+    setMessage(data);
+  };
 
   useEffect(() => {
     api();
@@ -39,10 +46,13 @@ function App() {
           value={todo}
         />
         <button onClick={add}> Add</button>
-        <div>
-          <p>{message.Todo}</p>
-          <p>{message.Completed}</p>
-        </div>
+        {message?.map((item) => (
+          <>
+            <p>{item.Todo}</p>
+            <p>{item.Completed}</p>
+            <button onClick={() => Delete(item._id)}>Delete</button>
+          </>
+        ))}
         );
       </div>
     </>
